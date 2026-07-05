@@ -1,12 +1,10 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+import { TabataTimer } from './tabata/tabata-timer';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [TabataTimer],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App {
-  protected readonly title = signal('timer');
-}
+export class App {}

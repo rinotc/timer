@@ -1,0 +1,76 @@
+<section class="timer" [class]="'phase-' + timer.phase()">
+  <p class="phase-label" role="status" aria-live="polite">{{ phaseLabel() }}</p>
+
+  <p class="time" aria-label="残り時間">{{ displayTime() }}</p>
+
+  <p class="sets">セット <span class="sets-value">{{ setLabel() }}</span></p>
+
+  <div class="controls">
+    @if (timer.isIdle() || timer.isFinished()) {
+      <button type="button" class="primary" (click)="timer.start()">スタート</button>
+    } @else if (timer.isRunning()) {
+      <button type="button" class="primary" (click)="timer.pause()">一時停止</button>
+    } @else {
+      <button type="button" class="primary" (click)="timer.resume()">再開</button>
+    }
+    <button type="button" (click)="timer.reset()" [disabled]="timer.isIdle()">リセット</button>
+    <button
+      type="button"
+      class="sound-toggle"
+      (click)="sound.toggleEnabled()"
+      [attr.aria-pressed]="sound.enabled()"
+    >
+      {{ sound.enabled() ? '🔊 音オン' : '🔇 音オフ' }}
+    </button>
+  </div>
+</section>
+
+<section class="settings" aria-labelledby="settings-heading">
+  <h2 id="settings-heading">設定</h2>
+  <div class="settings-grid">
+    <label>
+      準備時間(秒)
+      <input
+        type="number"
+        min="0"
+        max="120"
+        [value]="timer.settings().prepareSeconds"
+        [disabled]="timer.isActive()"
+        (change)="onSettingChange('prepareSeconds', $event)"
+      />
+    </label>
+    <label>
+      ワーク時間(秒)
+      <input
+        type="number"
+        min="1"
+        max="600"
+        [value]="timer.settings().workSeconds"
+        [disabled]="timer.isActive()"
+        (change)="onSettingChange('workSeconds', $event)"
+      />
+    </label>
+    <label>
+      休憩時間(秒)
+      <input
+        type="number"
+        min="1"
+        max="600"
+        [value]="timer.settings().restSeconds"
+        [disabled]="timer.isActive()"
+        (change)="onSettingChange('restSeconds', $event)"
+      />
+    </label>
+    <label>
+      セット数
+      <input
+        type="number"
+        min="1"
+        max="50"
+        [value]="timer.settings().totalSets"
+        [disabled]="timer.isActive()"
+        (change)="onSettingChange('totalSets', $event)"
+      />
+    </label>
+  </div>
+</section>

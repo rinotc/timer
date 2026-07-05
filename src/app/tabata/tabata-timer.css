@@ -1,0 +1,117 @@
+.timer {
+  border-radius: 16px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  color: #ffffff;
+  background: #37474f;
+  transition: background-color 0.3s ease;
+}
+
+.timer.phase-prepare {
+  background: #b26a00;
+}
+
+.timer.phase-work {
+  background: #b71c1c;
+}
+
+.timer.phase-rest {
+  background: #1b5e20;
+}
+
+.timer.phase-finished {
+  background: #4527a0;
+}
+
+.phase-label {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.time {
+  margin: 0.5rem 0;
+  font-size: 5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.sets {
+  margin: 0 0 1.5rem;
+  font-size: 1.1rem;
+}
+
+.sets-value {
+  font-weight: 700;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.controls button {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #ffffff;
+  border-radius: 8px;
+  background: transparent;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.controls button.primary {
+  background: #ffffff;
+  color: #263238;
+}
+
+.controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.controls button:focus-visible {
+  outline: 3px solid #ffd54f;
+  outline-offset: 2px;
+}
+
+.settings {
+  margin-top: 2rem;
+}
+
+.settings h2 {
+  font-size: 1.25rem;
+  margin: 0 0 1rem;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+.settings-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #263238;
+}
+
+.settings-grid input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #90a4ae;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.settings-grid input:disabled {
+  background: #eceff1;
+  color: #78909c;
+}
