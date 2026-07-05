@@ -23,6 +23,10 @@
       {{ sound.enabled() ? '🔊 音オン' : '🔇 音オフ' }}
     </button>
   </div>
+
+  @if (wakeLockStatus(); as message) {
+    <p class="wake-lock-status" aria-live="polite">{{ message }}</p>
+  }
 </section>
 
 <section class="settings" aria-labelledby="settings-heading">

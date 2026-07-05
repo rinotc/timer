@@ -80,6 +80,12 @@
   outline-offset: 2px;
 }
 
+.wake-lock-status {
+  margin: 1rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
 .settings {
   margin-top: 2rem;
 }

@@ -1,20 +1,25 @@
 import { TestBed } from '@angular/core/testing';
 import { SoundService } from './sound.service';
 import { TabataTimerService } from './tabata-timer.service';
+import { WakeLockService } from './wake-lock.service';
 
 describe('TabataTimerService', () => {
   let service: TabataTimerService;
   let sound: SoundService;
+  let wakeLock: WakeLockService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(TabataTimerService);
     sound = TestBed.inject(SoundService);
+    wakeLock = TestBed.inject(WakeLockService);
     vi.spyOn(sound, 'unlock').mockImplementation(() => {});
     vi.spyOn(sound, 'playSetStart').mockImplementation(() => {});
     vi.spyOn(sound, 'playSetEnd').mockImplementation(() => {});
     vi.spyOn(sound, 'playCountdown').mockImplementation(() => {});
     vi.spyOn(sound, 'playFinish').mockImplementation(() => {});
+    vi.spyOn(wakeLock, 'engage').mockResolvedValue();
+    vi.spyOn(wakeLock, 'release').mockResolvedValue();
   });
 
   afterEach(() => {
@@ -40,11 +45,12 @@ describe('TabataTimerService', () => {
     });
   });
 
-  it('start で準備フェーズに入る', () => {
+  it('start で準備フェーズに入り画面スリープ防止を有効化する', () => {
     service.start();
     expect(service.phase()).toBe('prepare');
     expect(service.remainingSeconds()).toBe(10);
     expect(service.isRunning()).toBe(true);
+    expect(wakeLock.engage).toHaveBeenCalledTimes(1);
   });
 
   it('準備時間が 0 の場合は即ワークが始まる', () => {
@@ -80,7 +86,7 @@ describe('TabataTimerService', () => {
     expect(sound.playSetStart).toHaveBeenCalledTimes(2);
   });
 
-  it('全セット完了で finished になり、終了音と完了音が鳴る', () => {
+  it('全セット完了で finished になり、終了音と完了音が鳴って画面スリープ防止を解除する', () => {
     service.updateSettings({ totalSets: 2 });
     service.start();
     // 準備 10 + (ワーク 20 + 休憩 10) + ワーク 20
@@ -90,6 +96,7 @@ describe('TabataTimerService', () => {
     expect(sound.playSetStart).toHaveBeenCalledTimes(2);
     expect(sound.playSetEnd).toHaveBeenCalledTimes(2);
     expect(sound.playFinish).toHaveBeenCalledTimes(1);
+    expect(wakeLock.release).toHaveBeenCalledTimes(1);
   });
 
   it('準備・休憩の残り3秒でカウントダウン音が鳴る', () => {
@@ -103,11 +110,13 @@ describe('TabataTimerService', () => {
     service.pause();
     expect(service.isRunning()).toBe(false);
     expect(service.phase()).toBe('prepare');
+    expect(wakeLock.release).toHaveBeenCalledTimes(1);
     service.resume();
     expect(service.isRunning()).toBe(true);
+    expect(wakeLock.engage).toHaveBeenCalledTimes(2);
   });
 
-  it('reset で idle に戻る', () => {
+  it('reset で idle に戻り画面スリープ防止も解除する', () => {
     service.start();
     advance(15);
     service.reset();
@@ -115,6 +124,7 @@ describe('TabataTimerService', () => {
     expect(service.remainingSeconds()).toBe(0);
     expect(service.currentSet()).toBe(0);
     expect(service.isRunning()).toBe(false);
+    expect(wakeLock.release).toHaveBeenCalledTimes(1);
   });
 
   it('動作中は設定を変更できない', () => {
