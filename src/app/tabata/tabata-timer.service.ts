@@ -1,5 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { SoundService } from './sound.service';
+import { WakeLockService } from './wake-lock.service';
 
 export type TabataPhase = 'idle' | 'prepare' | 'work' | 'rest' | 'finished';
 
@@ -29,6 +30,7 @@ export const DEFAULT_TABATA_SETTINGS: TabataSettings = {
 @Injectable({ providedIn: 'root' })
 export class TabataTimerService {
   private readonly sound = inject(SoundService);
+  private readonly wakeLock = inject(WakeLockService);
 
   readonly settings = signal<TabataSettings>({ ...DEFAULT_TABATA_SETTINGS });
 
@@ -65,6 +67,7 @@ export class TabataTimerService {
       this.startWork();
     }
     this.isRunning.set(true);
+    void this.wakeLock.engage();
     this.startTicking();
   }
 
@@ -73,6 +76,7 @@ export class TabataTimerService {
       return;
     }
     this.isRunning.set(false);
+    void this.wakeLock.release();
     this.stopTicking();
   }
 
@@ -82,6 +86,7 @@ export class TabataTimerService {
     }
     this.sound.unlock();
     this.isRunning.set(true);
+    void this.wakeLock.engage();
     this.startTicking();
   }
 
@@ -91,6 +96,7 @@ export class TabataTimerService {
     this.remainingSeconds.set(0);
     this.currentSet.set(0);
     this.isRunning.set(false);
+    void this.wakeLock.release();
   }
 
   /** 1秒経過ごとの処理(テストからも直接呼び出せるよう public) */
@@ -146,6 +152,7 @@ export class TabataTimerService {
     this.phase.set('finished');
     this.remainingSeconds.set(0);
     this.isRunning.set(false);
+    void this.wakeLock.release();
   }
 
   private startTicking(): void {
