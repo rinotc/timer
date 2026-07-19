@@ -1,59 +1,84 @@
-# Timer
+# タバタタイマー
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.0.5.
+タバタ式(HIIT)インターバルタイマーの PWA です。「20秒運動 → 10秒休憩」を繰り返すタバタプロトコルをはじめ、準備時間・ワーク時間・休憩時間・セット数を自由に設定してトレーニングに使えます。
 
-## Development server
+**公開URL: https://rinotc.github.io/timer/**
 
-To start a local development server, run:
+## 主な機能
 
-```bash
-ng serve
-```
+- **タイマーフロー**: 準備 → (ワーク → 休憩) × セット数 → 完了 の順に自動で進行します。
+- **設定変更**: 準備時間・ワーク時間・休憩時間・セット数を画面から変更できます(タイマー動作中は変更不可)。
+- **操作**: スタート / 一時停止 / 再開 / リセット。
+- **サウンド**: Web Audio API でビープ音を生成するため、外部音源ファイルは不要です。
+  - ワーク開始音、ワーク/セット終了音、準備・休憩の残り3秒カウントダウン音、全セット完了音
+  - 🔊 / 🔇 ボタンで音のオン・オフを切り替え可能
+- **画面スリープ防止**: Screen Wake Lock API により、タイマー動作中は画面が暗転・ロックしません(非対応ブラウザでは無効)。
+- **PWA 対応**: Service Worker とマニフェストによりホーム画面への追加やオフライン利用に対応しています。
+- **アクセシビリティ**: `aria-live` / `role="status"` などの ARIA 属性に対応しています。
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## デフォルト設定
 
-## Code scaffolding
+| 項目 | 既定値 |
+| --- | --- |
+| 準備時間 | 10 秒 |
+| ワーク時間 | 20 秒 |
+| 休憩時間 | 10 秒 |
+| セット数 | 8 セット |
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+典型的なタバタ(20秒運動 / 10秒休憩 × 8セット = 4分)の構成です。
 
-```bash
-ng generate component component-name
-```
+## 技術スタック
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+- [Angular](https://angular.dev/) 22(Angular Signals ベースの状態管理)
+- TypeScript
+- Web Audio API / Screen Wake Lock API
+- PWA(`@angular/service-worker`)
+- [Vitest](https://vitest.dev/)(ユニットテスト)
 
-```bash
-ng generate --help
-```
+## 開発
 
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+### セットアップ
 
 ```bash
-ng e2e
+npm install
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+### 開発サーバー
 
-## Additional Resources
+```bash
+npm start   # ng serve
+```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+起動後、ブラウザで `http://localhost:4200/` を開きます。ソースを編集すると自動でリロードされます。
+
+## ビルド
+
+```bash
+npm run build
+```
+
+ビルド成果物は `dist/` に出力されます(本番ビルドでは Service Worker が有効になります)。
+
+## テスト
+
+```bash
+npm test   # Vitest
+```
+
+CI 環境ではウォッチせずに一度だけ実行します。
+
+```bash
+npm test -- --watch=false
+```
+
+## デプロイ
+
+`main` ブランチへの push をトリガーに、GitHub Actions が GitHub Pages へ自動デプロイします(手動実行も可能)。
+
+- ビルド時に `--base-href=/timer/` を指定してサブパス配信に対応
+- SPA のルーティング対策として `index.html` を `404.html` にコピー
+
+ワークフロー定義は以下にあります。
+
+- デプロイ: `.github/workflows/deploy.yml`
+- ユニットテスト(`main` への push / PR で実行): `.github/workflows/test.yml`
